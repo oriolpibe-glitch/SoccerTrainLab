@@ -1,0 +1,21 @@
+{
+  "name": "trainlab-pro",
+  "version": "1.0.0",
+  "description": "TrainLab - Sistema de gestión deportiva",
+  "main": "public/index.html",
+  "scripts": {
+    "dev": "serve public",
+    "start": "serve public",
+    "build": "echo 'Build step not required for static site'"
+  },
+  "keywords": ["deporte", "entrenamiento", "futbol", "gestion"],
+  "author": "Tu Nombre",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

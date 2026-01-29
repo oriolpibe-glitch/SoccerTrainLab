@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel d'Entrenador | TrainLab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-light: #60a5fa;
+            --primary-dark: #2563eb;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --radius-lg: 16px;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: var(--bg-surface);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-brand i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .nav-brand h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        /* CONTAINER PRINCIPAL */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .welcome-card h2 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-card p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+
+        /* GRID DE ACCIONES */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .card-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* FORMULARIOS */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        /* LISTA DE EQUIPOS */
+        .teams-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .team-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .team-code {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .team-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-info {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .team-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .team-actions button {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-edit {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* AVISOS */
+        .announcements-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .announcement-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .announcement-team {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+
+        .announcement-date {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .announcement-content {
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        /* ESTADOS */
+        .hidden {
+            display: none !important;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .teams-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-whistle"></i>
+            <h1>TrainLab Entrenador</h1>
+        </div>
+        <div class="user-info">
+            <div class="user-avatar" id="userInitials">E</div>
+            <button class="btn-logout" id="logoutBtn">Sortir</button>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="container">
+        <!-- Tarjeta de Bienvenida -->
+        <div class="welcome-card">
+            <h2 id="welcomeMessage">Benvingut, Entrenador!</h2>
+            <p id="userEmail">Carregant informació...</p>
+        </div>
+
+        <!-- Grid de Acciones -->
+        <div class="actions-grid">
+            <!-- Card 1: Crear Equipo -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-plus-circle"></i>
+                    <h3>Crear Nou Equip</h3>
+                </div>
+                <form id="createTeamForm">
+                    <div class="form-group">
+                        <label for="teamName">Nom de l'Equip</label>
+                        <input type="text" id="teamName" class="form-input" placeholder="Ex: Sub-15 A" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teamCategory">Categoria</label>
+                        <input type="text" id="teamCategory" class="form-input" placeholder="Ex: Sub-15, Primera, etc.">
+                    </div>
+                    <button type="submit" class="btn-primary" id="createTeamBtn">
+                        <span>Crear Equip</span>
+                        <div class="spinner hidden" id="createTeamSpinner"></div>
+                    </button>
+                </form>
+                <div id="createTeamMessage"></div>
+            </div>
+
+            <!-- Card 2: Enviar Aviso -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-bullhorn"></i>
+                    <h3>Enviar Avis</h3>
+                </div>
+                <form id="sendAnnouncementForm">
+                    <div class="form-group">
+                        <label for="announcementTeam">Equip Destí</label>
+                        <select id="announcementTeam" class="form-input" required>
+                            <option value="">Selecciona un equip</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="announcementTitle">Títol</label>
+                        <input type="text" id="announcementTitle" class="form-input" placeholder="Títol de l'avís" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="announcementContent">Missatge</label>
+                        <textarea id="announcementContent" class="form-input" rows="3" placeholder="Escriu el teu missatge aquí..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" id="sendAnnouncementBtn">
+                        <span>Enviar Avis</span>
+                        <div class="spinner hidden" id="sendAnnouncementSpinner"></div>
+                    </button>
+                </form>
+                <div id="sendAnnouncementMessage"></div>
+            </div>
+        </div>
+
+        <!-- Mis Equipos -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-header">
+                <i class="fas fa-users"></i>
+                <h3>Els Meus Equips</h3>
+            </div>
+            <div class="teams-list" id="teamsList">
+                <!-- Los equipos se cargarán aquí con JavaScript -->
+                <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                    <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1rem; display: block; opacity: 0.5;"></i>
+                    Encara no tens cap equip creat
+                </p>
+            </div>
+        </div>
+
+        <!-- Avisos Recientes -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-bell"></i>
+                <h3>Avisos Recents</h3>
+            </div>
+            <div class="announcements-list" id="announcementsList">
+                <!-- Los avisos se cargarán aquí -->
+                <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                    No hi ha avisos recents
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA VER DETALLES DEL EQUIPO -->
+    <div class="modal" id="teamModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalls de l'Equip</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div id="modalContent">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signOut,
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            query, 
+            where, 
+            getDocs, 
+            doc, 
+            deleteDoc,
+            updateDoc,
+            arrayUnion,
+            serverTimestamp,
+            orderBy,
+            onSnapshot
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Configuración Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBaxLhVUekJLCyrtvQaF7t_-1dTERbvAE",
+            authDomain: "soccertrainlab.firebaseapp.com",
+            projectId: "soccertrainlab",
+            storageBucket: "soccertrainlab.firebasestorage.app",
+            messagingSenderId: "681099221197",
+            appId: "1:681099221197:web:55ae8621c8bc8649057184"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Elementos DOM
+        const logoutBtn = document.getElementById('logoutBtn');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const userEmail = document.getElementById('userEmail');
+        const userInitials = document.getElementById('userInitials');
+        const teamsList = document.getElementById('teamsList');
+        const announcementsList = document.getElementById('announcementsList');
+        const teamModal = document.getElementById('teamModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalContent = document.getElementById('modalContent');
+
+        // Verificar autenticación y rol
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Verificar que sea entrenador
+            const userDoc = await getDocs(query(
+                collection(db, 'usuaris'),
+                where('email', '==', user.email)
+            ));
+
+            if (!userDoc.empty) {
+                const userData = userDoc.docs[0].data();
+                if (userData.rol !== 'entrenador') {
+                    window.location.href = 'dashboard-familiar.html';
+                    return;
+                }
+
+                // Mostrar información del usuario
+                welcomeMessage.textContent = `Benvingut, ${userData.nom || 'Entrenador'}!`;
+                userEmail.textContent = user.email;
+                userInitials.textContent = userData.nom ? userData.nom.charAt(0).toUpperCase() : 'E';
+
+                // Cargar datos
+                loadUserTeams(user.uid, userData.nom);
+                loadAnnouncements(user.uid);
+                populateTeamSelect(user.uid);
+            } else {
+                // Si no hay datos en Firestore, redirigir para completar perfil
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+            }
+        });
+
+        // FUNCIÓN: Crear nuevo equipo
+        document.getElementById('createTeamForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const teamName = document.getElementById('teamName').value;
+            const teamCategory = document.getElementById('teamCategory').value;
+            const user = auth.currentUser;
+            
+            if (!teamName.trim()) {
+                showMessage('createTeamMessage', 'error', 'El nom de l\'equip és obligatori');
+                return;
+            }
+
+            // Mostrar loading
+            const btn = document.getElementById('createTeamBtn');
+            const spinner = document.getElementById('createTeamSpinner');
+            const btnText = btn.querySelector('span');
+            btn.disabled = true;
+            btnText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+
+            try {
+                // Generar código único
+                const teamCode = generateTeamCode();
+                
+                // Crear equipo en Firestore
+                const teamRef = await addDoc(collection(db, 'equips'), {
+                    nom: teamName.trim(),
+                    categoria: teamCategory.trim() || 'General',
+                    codi: teamCode,
+                    entrenadorId: user.uid,
+                    entrenadorNom: user.email,
+                    membres: [],
+                    dataCreacio: serverTimestamp(),
+                    actiu: true
+                });
+
+                // Actualizar usuario con referencia al equipo
+                const userQuery = await getDocs(query(
+                    collection(db, 'usuaris'),
+                    where('email', '==', user.email)
+                ));
+                
+                if (!userQuery.empty) {
+                    const userDoc = userQuery.docs[0];
+                    await updateDoc(doc(db, 'usuaris', userDoc.id), {
+                        meusEquips: arrayUnion(teamRef.id)
+                    });
+                }
+
+                // Mostrar éxito
+                showMessage('createTeamMessage', 'success', `Equip creat! Codi: ${teamCode}`);
+                
+                // Resetear formulario
+                document.getElementById('createTeamForm').reset();
+                
+                // Recargar lista de equipos
+                loadUserTeams(user.uid);
+
+            } catch (error) {
+                console.error('Error creant equip:', error);
+                showMessage('createTeamMessage', 'error', 'Error al crear l\'equip: ' + error.message);
+            } finally {
+                // Restaurar botón
+                btn.disabled = false;
+                btnText.classList.remove('hidden');
+                spinner.classList.add('hidden');
+            }
+        });
+
+        // FUNCIÓN: Enviar aviso
+        document.getElementById('sendAnnouncementForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const teamId = document.getElementById('announcementTeam').value;
+            const title = document.getElementById('announcementTitle').value;
+            const content = document.getElementById('announcementContent').value;
+            const user = auth.currentUser;
+            
+            if (!teamId || !title.trim() || !content.trim()) {
+                showMessage('sendAnnouncementMessage', 'error', 'Completa tots els camps');
+                return;
+            }
+
+            // Mostrar loading
+            const btn = document.getElementById('sendAnnouncementBtn');
+            const spinner = document.getElementById('sendAnnouncementSpinner');
+            const btnText = btn.querySelector('span');
+            btn.disabled = true;
+            btnText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+
+            try {
+                // Crear aviso en Firestore
+                await addDoc(collection(db, 'avisos'), {
+                    equipId: teamId,
+                    titol: title.trim(),
+                    contingut: content.trim(),
+                    autorId: user.uid,
+                    autorEmail: user.email,
+                    data: serverTimestamp(),
+                    llegitPer: [],
+                    important: false
+                });
+
+                // Mostrar éxito
+                showMessage('sendAnnouncementMessage', 'success', 'Avis enviat correctament!');
+                
+                // Resetear formulario
+                document.getElementById('sendAnnouncementForm').reset();
+                
+                // Recargar avisos
+                loadAnnouncements(user.uid);
+
+            } catch (error) {
+                console.error('Error enviant avís:', error);
+                showMessage('sendAnnouncementMessage', 'error', 'Error al enviar l\'avís: ' + error.message);
+            } finally {
+                // Restaurar botón
+                btn.disabled = false;
+                btnText.classList.remove('hidden');
+                spinner.classList.add('hidden');
+            }
+        });
+
+        // FUNCIÓN: Cargar equipos del usuario
+        async function loadUserTeams(userId, userName) {
+            try {
+                const teamsQuery = query(
+                    collection(db, 'equips'),
+                    where('entrenadorId', '==', userId)
+                );
+                
+                const querySnapshot = await getDocs(teamsQuery);
+                
+                if (querySnapshot.empty) {
+                    teamsList.innerHTML = `
+                        <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                            <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1rem; display: block; opacity: 0.5;"></i>
+                            Encara no tens cap equip creat
+                        </p>
+                    `;
+                    return;
+                }
+
+                let teamsHTML = '';
+                
+                querySnapshot.forEach((doc) => {
+                    const team = doc.data();
+                    const memberCount = team.membres ? team.membres.length : 0;
+                    
+                    teamsHTML += `
+                        <div class="team-card" data-team-id="${doc.id}">
+                            <div class="team-code">${team.codi}</div>
+                            <h3 class="team-name">${team.nom}</h3>
+                            <div class="team-info">
+                                <p><i class="fas fa-tag"></i> ${team.categoria || 'General'}</p>
+                                <p><i class="fas fa-users"></i> ${memberCount} membre${memberCount !== 1 ? 's' : ''}</p>
+                                <p><i class="fas fa-calendar"></i> ${formatDate(team.dataCreacio)}</p>
+                            </div>
+                            <div class="team-actions">
+                                <button class="btn-edit" onclick="viewTeamDetails('${doc.id}')">
+                                    <i class="fas fa-eye"></i> Veure
+                                </button>
+                                <button class="btn-delete" onclick="deleteTeam('${doc.id}')">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                teamsList.innerHTML = teamsHTML;
+                
+            } catch (error) {
+                console.error('Error carregant equips:', error);
+                teamsList.innerHTML = `
+                    <div class="error-message">
+                        Error carregant els equips
+                    </div>
+                `;
+            }
+        }
+
+        // FUNCIÓN: Cargar avisos
+        async function loadAnnouncements(userId) {
+            try {
+                // Primero obtener los equipos del entrenador
+                const teamsQuery = query(
+                    collection(db, 'equips'),
+                    where('entrenadorId', '==', userId)
+                );
+                
+                const teamsSnapshot = await getDocs(teamsQuery);
+                
+                if (teamsSnapshot.empty) {
+                    announcementsList.innerHTML = `
+                        <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                            No hi ha avisos recents
+                        </p>
+                    `;
+                    return;
+                }
+
+                const teamIds = teamsSnapshot.docs.map(doc => doc.id);
+                
+                // Obtener avisos de esos equipos
+                const announcementsQuery = query(
+                    collection(db, 'avisos'),
+                    where('equipId', 'in', teamIds),
+                    orderBy('data', 'desc'),
+                    limit(10)
+                );
+                
+                const announcementsSnapshot = await getDocs(announcementsQuery);
+                
+                if (announcementsSnapshot.empty) {
+                    announcementsList.innerHTML = `
+                        <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                            No hi ha avisos recents
+                        </p>
+                    `;
+                    return;
+                }
+
+                let announcementsHTML = '';
+                
+                announcementsSnapshot.forEach((doc) => {
+                    const announcement = doc.data();
+                    const team = teamsSnapshot.docs.find(t => t.id === announcement.equipId)?.data();
+                    
+                    announcementsHTML += `
+                        <div class="announcement-card">
+                            <div class="announcement-header">
+                                <span class="announcement-team">${team?.nom || 'Equip'}</span>
+                                <span class="announcement-date">${formatDate(announcement.data)}</span>
+                            </div>
+                            <h4>${announcement.titol}</h4>
+                            <p class="announcement-content">${announcement.contingut}</p>
+                            <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                                <i class="fas fa-user"></i> ${announcement.autorEmail}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                announcementsList.innerHTML = announcementsHTML;
+                
+            } catch (error) {
+                console.error('Error carregant avisos:', error);
+                announcementsList.innerHTML = `
+                    <div class="error-message">
+                        Error carregant els avisos
+                    </div>
+                `;
+            }
+        }
+
+        // FUNCIÓN: Poblar select de equipos
+        async function populateTeamSelect(userId) {
+            const select = document.getElementById('announcementTeam');
+            
+            try {
+                const teamsQuery = query(
+                    collection(db, 'equips'),
+                    where('entrenadorId', '==', userId)
+                );
+                
+                const querySnapshot = await getDocs(teamsQuery);
+                
+                // Limpiar opciones excepto la primera
+                select.innerHTML = '<option value="">Selecciona un equip</option>';
+                
+                querySnapshot.forEach((doc) => {
+                    const team = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = `${team.nom} (${team.codi})`;
+                    select.appendChild(option);
+                });
+                
+            } catch (error) {
+                console.error('Error carregant equips per select:', error);
+            }
+        }
+
+        // FUNCIÓN: Ver detalles del equipo (global para que funcione onclick)
+        window.viewTeamDetails = async function(teamId) {
+            try {
+                const teamDoc = await getDocs(doc(db, 'equips', teamId));
+                
+                if (!teamDoc.exists()) {
+                    showMessage('modalContent', 'error', 'Equip no trobat');
+                    return;
+                }
+
+                const team = teamDoc.data();
+                
+                // Obtener miembros
+                let membersHTML = '';
+                if (team.membres && team.membres.length > 0) {
+                    // Aquí podrías obtener detalles de los usuarios
+                    membersHTML = `
+                        <h4 style="margin-top: 1rem;">Membres (${team.membres.length})</h4>
+                        <p>IDs dels membres: ${team.membres.join(', ')}</p>
+                    `;
+                } else {
+                    membersHTML = '<p>Encara no hi ha membres en aquest equip</p>';
+                }
+                
+                modalContent.innerHTML = `
+                    <div>
+                        <div class="team-code" style="margin-bottom: 1rem;">${team.codi}</div>
+                        <h3>${team.nom}</h3>
+                        <p><strong>Categoria:</strong> ${team.categoria || 'General'}</p>
+                        <p><strong>Creat el:</strong> ${formatDate(team.dataCreacio)}</p>
+                        <p><strong>Entrenador:</strong> ${team.entrenadorNom}</p>
+                        
+                        ${membersHTML}
+                        
+                        <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                            <p><strong>Comparteix el codi:</strong></p>
+                            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                <input type="text" value="${team.codi}" readonly 
+                                       style="flex: 1; padding: 0.5rem; background: var(--bg-body); border: 1px solid var(--border); border-radius: 4px;">
+                                <button onclick="copyToClipboard('${team.codi}')" 
+                                        style="padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                teamModal.style.display = 'flex';
+                
+            } catch (error) {
+                console.error('Error mostrant detalls:', error);
+                modalContent.innerHTML = `
+                    <div class="error-message">
+                        Error carregant els detalls de l'equip
+                    </div>
+                `;
+                teamModal.style.display = 'flex';
+            }
+        };
+
+        // FUNCIÓN: Eliminar equipo (global)
+        window.deleteTeam = async function(teamId) {
+            if (!confirm('Estàs segur que vols eliminar aquest equip?')) {
+                return;
+            }
+
+            try {
+                await deleteDoc(doc(db, 'equips', teamId));
+                
+                // Recargar lista
+                const user = auth.currentUser;
+                if (user) {
+                    loadUserTeams(user.uid);
+                    populateTeamSelect(user.uid);
+                }
+                
+            } catch (error) {
+                console.error('Error eliminant equip:', error);
+                alert('Error al eliminar l\'equip');
+            }
+        };
+
+        // FUNCIÓN: Copiar al portapapeles (global)
+        window.copyToClipboard = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Codi copiat al portapapeles!');
+            }).catch(err => {
+                console.error('Error copiant:', err);
+            });
+        };
+
+        // FUNCIÓN: Generar código de equipo
+        function generateTeamCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        // FUNCIÓN: Formatear fecha
+        function formatDate(timestamp) {
+            if (!timestamp) return 'Data no disponible';
+            
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return date.toLocaleDateString('ca-ES', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // FUNCIÓN: Mostrar mensajes
+        function showMessage(containerId, type, message) {
+            const container = document.getElementById(containerId);
+            const className = type === 'success' ? 'success-message' : 'error-message';
+            
+            container.innerHTML = `
+                <div class="${className}">
+                    <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle"></i>
+                    ${message}
+                </div>
+            `;
+            
+            // Auto-ocultar después de 5 segundos
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // FUNCIÓN: limit (para queries)
+        function limit(limit) {
+            // Esta función sería importada de Firebase, pero para compatibilidad:
+            return limit;
+        }
+
+        // Cerrar modal
+        closeModal.addEventListener('click', () => {
+            teamModal.style.display = 'none';
+        });
+
+        // Cerrar modal al hacer click fuera
+        window.addEventListener('click', (e) => {
+            if (e.target === teamModal) {
+                teamModal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

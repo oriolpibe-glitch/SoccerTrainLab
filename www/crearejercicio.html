@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Dissenyador | SoccerTrainlab editor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* ====== VARIABLES DE DISSENY PREMIUM ====== */
+        :root {
+            --bg-body: #0f172a;
+            --bg-panel: #1e293b;
+            --bg-item: #334155;
+            --bg-surface: rgba(255, 255, 255, 0.03);
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --text-muted: #64748b;
+            --primary: #3b82f6;
+            --primary-light: #60a5fa;
+            --primary-dark: #2563eb;
+            --accent: #10b981;
+            --accent-light: #34d399;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-light: rgba(255, 255, 255, 0.12);
+            --pitch-green: #14532d;
+            --pitch-lines: #22c55e;
+            --header-bg: rgba(15, 23, 42, 0.9);
+            
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.5);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 24px;
+            --radius-full: 9999px;
+            
+            --transition-fast: 150ms ease;
+            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms ease;
+            
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            
+            /* NOU: Variable per a mòbil */
+            --touch-min: 44px;
+        }
+
+        /* ====== LIGHT MODE ====== */
+        body.light-mode {
+            --bg-body: #f8fafc;
+            --bg-panel: #ffffff;
+            --bg-item: #f1f5f9;
+            --bg-surface: rgba(0, 0, 0, 0.02);
+            --text-main: #0f172a;
+            --text-dim: #475569;
+            --text-muted: #94a3b8;
+            --border: rgba(0, 0, 0, 0.08);
+            --border-light: rgba(0, 0, 0, 0.06);
+            --header-bg: rgba(255, 255, 255, 0.9);
+            --pitch-green: #22c55e;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ====== RESET I BASE ====== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            font-size: 16px;
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color var(--transition-base), color var(--transition-base);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ====== HEADER PREMIUM ====== */
+        header {
+            background: var(--header-bg);
+            padding: var(--spacing-sm) var(--spacing-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 1000;
+            position: relative;
+            min-height: 64px;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            text-decoration: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .logo span {
+            color: var(--primary);
+            font-weight: 400;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* ====== TOOLBAR SUPERIOR ====== */
+        .toolbar-top {
+            display: flex;
+            align-items: center;
+            background: var(--bg-surface);
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-lg);
+            gap: var(--spacing-xs);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .mode-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all var(--transition-base);
+            white-space: nowrap;
+        }
+
+        .mode-btn:hover {
+            background: var(--bg-item);
+            color: var(--text-main);
+            transform: translateY(-1px);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ====== BOTONS D'ACCIÓ ====== */
+        .action-btn {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transition: all var(--transition-base);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .action-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .action-btn.secondary {
+            background: var(--bg-surface);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .action-btn.secondary:hover {
+            background: var(--bg-item);
+            border-color: var(--primary);
+        }
+
+        .action-btn.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .action-btn.danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        /* ====== LAYOUT PRINCIPAL ====== */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            padding: var(--spacing-lg);
+            gap: var(--spacing-lg);
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* ====== SIDEBAR ESQUERRA ====== */
+        .sidebar {
+            width: 140px;
+            background: var(--bg-panel);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--spacing-lg) var(--spacing-sm);
+            gap: var(--spacing-lg);
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+            flex-shrink: 0;
+        }
+
+        .item-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-xs);
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .item-box {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-item);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item-box:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .item-box:active {
+            cursor: grabbing;
+            transform: scale(0.98);
+        }
+
+        .item-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+        }
+
+        /* ====== ELEMENTS DEL CAMP ====== */
+        .player {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 3px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-base);
+        }
+
+        .player:hover {
+            transform: scale(1.1);
+        }
+
+        .cone-obj {
+            width: 0;
+            height: 0;
+            border-left: 16px solid transparent;
+            border-right: 16px solid transparent;
+            border-bottom: 28px solid var(--warning);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .goal-visual {
+            width: 70px;
+            height: 40px;
+            border: 3px solid var(--danger);
+            background-color: rgba(255, 255, 255, 0.15);
+            background-image: 
+                linear-gradient(white 1px, transparent 1px),
+                linear-gradient(90deg, white 1px, transparent 1px);
+            background-size: 8px 8px;
+            position: relative;
+            border-radius: 2px;
+        }
+
+        .ladder-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-left: 3px solid currentColor;
+            border-right: 3px solid currentColor;
+            position: relative;
+        }
+
+        .ladder-step-line {
+            height: 3px;
+            background: currentColor;
+            width: 100%;
+            border-radius: 1px;
+        }
+
+        /* ====== CAMP DE JOC ====== */
+        #pitch-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-surface);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        #pitch-container {
+            position: relative;
+            background: linear-gradient(135deg, var(--pitch-green) 0%, #14532d 100%);
+            border: 4px solid rgba(255, 255, 255, 0.9);
+            box-shadow: var(--shadow-xl);
+            touch-action: none;
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+        }
+
+        /* ====== LINIES DEL CAMP ====== */
+        .pitch-lines-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .line-white {
+            position: absolute;
+            border: 3px solid var(--pitch-lines);
+            pointer-events: none;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+
+        /* ====== ELEMENTS DRAGGABLE ====== */
+        .element {
+            position: absolute;
+            z-index: 100;
+            cursor: move;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+            transition: transform var(--transition-base);
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .element.selected {
+            outline: 3px solid var(--primary);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+            border-radius: var(--radius-sm);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { outline-color: var(--primary); }
+            50% { outline-color: var(--primary-light); }
+        }
+
+        /* ====== PANEL DRET ====== */
+        .right-panel {
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            flex-shrink: 0;
+        }
+
+        .panel-card {
+            background: var(--bg-panel);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ====== FORMULARIS I INPUTS ====== */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .input-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .input-text-main {
+            background: var(--bg-item);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            width: 100%;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all var(--transition-base);
+        }
+
+        .input-text-main:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+
+        .input-text-main::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* ====== TAGS I CATEGORIES ====== */
+        .filter-tags {
+            display: flex;
+            gap: var(--spacing-xs);
+            flex-wrap: wrap;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .tag {
+            background: var(--bg-item);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            cursor: pointer;
+            border: 1px solid var(--border);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all var(--transition-base);
+            white-space: nowrap;
+        }
+
+        .tag:hover {
+            border-color: var(--primary);
+            color: var(--text-main);
+            transform: translateY(-1px);
+        }
+
+        .tag.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ====== SELECTOR DE COLORS ====== */
+        .color-picker {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .color-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--border);
+            transition: all var(--transition-base);
+            position: relative;
+        }
+
+        .color-dot:hover {
+            transform: scale(1.1);
+        }
+
+        .color-dot.active {
+            border-color: white;
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .color-dot::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            transition: all var(--transition-base);
+        }
+
+        .color-dot.active::after {
+            border-color: currentColor;
+        }
+
+        /* ====== CONTROLS D'ELEMENT ====== */
+        #panel-controls {
+            display: none;
+            margin-top: var(--spacing-lg);
+            border-top: 1px solid var(--border);
+            padding-top: var(--spacing-lg);
+            animation: slideInUp var(--transition-base);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .control-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .range-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--bg-item);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            margin: var(--spacing-md) 0;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .range-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+
+        .icon-btn {
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-xs);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all var(--transition-base);
+        }
+
+        .icon-btn.rotate {
+            background: var(--bg-item);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .icon-btn.rotate:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .icon-btn.delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .icon-btn.delete:hover {
+            background: #dc2626;
+        }
+
+        /* ====== CANVAS I OVERLAY ====== */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #draw-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 50;
+            display: none;
+            cursor: crosshair;
+        }
+
+        /* ====== ESTAT "NO SELECCIONAT" ====== */
+        #no-sel-msg {
+            color: var(--text-muted);
+            text-align: center;
+            padding: var(--spacing-xl) var(--spacing-md);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--bg-surface);
+        }
+
+        /* ====== SCROLLBAR PERSONALITZADA ====== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-item);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* ====== RESPONSIVE ====== */
+        @media (max-width: 1400px) {
+            .main-layout {
+                padding: var(--spacing-md);
+                gap: var(--spacing-md);
+            }
+            
+            .sidebar {
+                width: 120px;
+                padding: var(--spacing-md) var(--spacing-xs);
+            }
+            
+            .right-panel {
+                width: 280px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout {
+                flex-direction: column;
+                overflow-y: auto;
+            }
+            
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                height: auto;
+                padding: var(--spacing-sm);
+                overflow-x: auto;
+            }
+            
+            .item-card {
+                flex: 0 0 auto;
+            }
+            
+            .right-panel {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: var(--spacing-md);
+                padding: var(--spacing-md);
+            }
+            
+            .toolbar-top {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .action-buttons {
+                display: flex;
+                gap: var(--spacing-sm);
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ====== ANIMACIONS I EFECTES ====== */
+        .fade-in {
+            animation: fadeIn var(--transition-base);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .slide-in-right {
+            animation: slideInRight var(--transition-base);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ====== ESTATS DE CARREGA ====== */
+        .loading {
+            position: relative;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* ====== MILLORES ESPECÍFIQUES PER A MÒBIL ====== */
+        @media (max-width: 768px) {
+            /* Layout principal per a mòbil */
+            body {
+                height: 100vh;
+                overflow: hidden;
+            }
+            
+            .main-layout {
+                flex-direction: column;
+                height: calc(100vh - 70px);
+                padding: 8px;
+                gap: 8px;
+            }
+            
+            /* Header adaptatiu */
+            header {
+                padding: 10px 12px;
+                min-height: 70px;
+                flex-wrap: wrap;
+            }
+            
+            .logo {
+                font-size: 1.2rem;
+                order: 1;
+                flex: 1;
+            }
+            
+            .toolbar-top {
+                order: 3;
+                width: 100%;
+                margin-top: 8px;
+                padding: 6px;
+                justify-content: space-between;
+                overflow-x: auto;
+            }
+            
+            .action-buttons {
+                order: 2;
+                flex: 1;
+                justify-content: flex-end;
+                gap: 8px;
+            }
+            
+            /* Sidebar horitzontal */
+            .sidebar {
+                width: 100%;
+                height: 110px;
+                flex-direction: row;
+                padding: 10px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                border-radius: 12px;
+                flex-shrink: 0;
+                order: 2;
+            }
+            
+            .item-card {
+                flex: 0 0 auto;
+                width: 90px;
+                margin: 0 5px;
+            }
+            
+            .item-box {
+                width: 70px;
+                height: 70px;
+                min-height: var(--touch-min);
+                min-width: var(--touch-min);
+            }
+            
+            .item-label {
+                font-size: 0.65rem;
+                white-space: nowrap;
+            }
+            
+            /* Àrea principal del camp */
+            #pitch-wrapper {
+                flex: 1;
+                order: 1;
+                min-height: 300px;
+                padding: 8px;
+                border-radius: 12px;
+            }
+            
+            /* Panel dret completament adaptable */
+            .right-panel {
+                width: 100%;
+                order: 3;
+                flex-shrink: 0;
+                max-height: 40vh;
+                overflow-y: auto;
+            }
+            
+            .panel-card {
+                padding: 16px;
+                border-radius: 12px;
+            }
+            
+            /* Botons més grans per a dit */
+            .mode-btn, .action-btn, .tag, .icon-btn {
+                min-height: 40px;
+                min-width: 40px;
+                padding: 10px 14px;
+            }
+            
+            .color-dot {
+                width: 32px;
+                height: 32px;
+                min-height: var(--touch-min);
+                min-width: var(--touch-min);
+            }
+            
+            /* Millores per a pantalles molt petites */
+            @media (max-width: 480px) {
+                .toolbar-top .mode-btn {
+                    font-size: 0.7rem;
+                    padding: 8px 10px;
+                }
+                
+                .action-btn {
+                    font-size: 0.75rem;
+                    padding: 10px 12px;
+                }
+                
+                .item-box {
+                    width: 60px;
+                    height: 60px;
+                }
+                
+                .item-card {
+                    width: 75px;
+                }
+                
+                #pitch-wrapper {
+                    min-height: 250px;
+                }
+            }
+            
+            /* Suport per a orientació horitzontal */
+            @media (max-width: 768px) and (orientation: landscape) {
+                .main-layout {
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    height: calc(100vh - 60px);
+                }
+                
+                .sidebar {
+                    width: 120px;
+                    height: 100%;
+                    flex-direction: column;
+                    order: 1;
+                }
+                
+                #pitch-wrapper {
+                    flex: 1;
+                    order: 2;
+                    min-width: 300px;
+                }
+                
+                .right-panel {
+                    width: 280px;
+                    order: 3;
+                    max-height: 100%;
+                }
+            }
+        }
+        
+        /* ====== PREVENCIÓ DE ZOOM AUTOMÀTIC EN iOS ====== */
+        input, textarea, select {
+            font-size: 16px;
+        }
+        
+        /* ====== SUPPORT PER A TOUCH DRAGGING ====== */
+        .element {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        /* ====== MILLORES PER A GESTOS TÀCTILS ====== */
+        @media (hover: none) and (pointer: coarse) {
+            .item-box:hover {
+                transform: none;
+            }
+            
+            .mode-btn:hover, .action-btn:hover, .tag:hover, .color-dot:hover {
+                transform: none;
+            }
+            
+            /* Efectes actius per a touch */
+            .item-box:active {
+                transform: scale(0.95);
+            }
+            
+            .mode-btn:active, .action-btn:active, .tag:active {
+                transform: scale(0.98);
+            }
+        }
+    </style>
+</head>
+<body onclick="handleGlobalClick(event)">
+
+    <header onclick="event.stopPropagation()">
+        <a href="index.html" class="logo">
+            <i class="fas fa-futbol" style="color: var(--primary);"></i>
+            SoccerTrainlab <span>EDITOR</span>
+        </a>
+        
+        <div class="toolbar-top">
+            <button class="mode-btn active" id="m-select" onclick="setMode('select')">
+                <i class="fas fa-mouse-pointer"></i> Tria
+            </button>
+            <button class="mode-btn" id="m-line" onclick="setMode('line')">
+                <i class="fas fa-arrow-right"></i> Moure
+            </button>
+            <button class="mode-btn" id="m-dash" onclick="setMode('dash')">
+                <i class="fas fa-ellipsis-h"></i> Pas
+            </button>
+            <button class="mode-btn" id="m-ladder" onclick="setMode('ladder')">
+                <i class="fas fa-bars-staggered"></i> Escala
+            </button>
+            <button class="mode-btn" onclick="toggleTheme()">
+                <i class="fas fa-adjust"></i> Tema
+            </button>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn primary" onclick="downloadImage()">
+                <i class="fas fa-camera"></i> Foto
+            </button>
+            <button class="action-btn secondary" onclick="togglePitchType()">
+                <i class="fas fa-exchange-alt"></i> 
+                <span id="pitch-type-text">Sense Línies</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <aside class="sidebar" onclick="event.stopPropagation()">
+            <div class="item-card">
+                <div class="item-box" draggable="true" ondragstart="dragStart(event, 'p-red')">
+                    <div class="player" style="background:#ef4444">1</div>
+                </div>
+                <span class="item-label">Atac</span>
+            </div>
+            
+            <div class="item-card">
+                <div class="item-box" draggable="true" ondragstart="dragStart(event, 'p-blue')">
+                    <div class="player" style="background:#3b82f6">2</div>
+                </div>
+                <span class="item-label">Defensa</span>
+            </div>
+            
+            <div class="item-card">
+                <div class="item-box" draggable="true" ondragstart="dragStart(event, 'ball')">
+                    <i class="fas fa-futbol" style="color:white; font-size:28px;"></i>
+                </div>
+                <span class="item-label">Pilota</span>
+            </div>
+            
+            <div class="item-card">
+                <div class="item-box" draggable="true" ondragstart="dragStart(event, 'cone')">
+                    <div class="cone-obj"></div>
+                </div>
+                <span class="item-label">Con</span>
+            </div>
+            
+            <div class="item-card">
+                <div class="item-box" draggable="true" ondragstart="dragStart(event, 'goal')">
+                    <div class="goal-visual"></div>
+                </div>
+                <span class="item-label">Porteria</span>
+            </div>
+            
+            <div class="item-card">
+                <div class="item-box" draggable="true" ondragstart="dragStart(event, 'valla')">
+                    <div style="width:45px; height:8px; border:2px solid white; border-radius:2px;"></div>
+                </div>
+                <span class="item-label">Valla</span>
+            </div>
+            
+            <div class="item-card">
+                <div class="item-box" onclick="setMode('ladder')">
+                    <i class="fas fa-bars-staggered" style="color:white; font-size:28px;"></i>
+                </div>
+                <span class="item-label">Escala</span>
+            </div>
+        </aside>
+
+        <div style="flex:1; display:flex; flex-direction:column; gap:var(--spacing-lg); min-width:0;">
+            <div id="pitch-wrapper" class="fade-in">
+                <main id="pitch-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div id="lines-layer" class="pitch-lines-layer"></div>
+                    <canvas id="mainCanvas"></canvas>
+                    <div id="draw-overlay"></div>
+                </main>
+            </div>
+            
+            <div class="panel-card slide-in-right">
+                <div class="input-group">
+                    <div class="input-label">Categoria de l'exercici</div>
+                    <div class="filter-tags" id="category-selector">
+                        <div class="tag active" onclick="selectCategory('Escalfament', this)">Escalfament</div>
+                        <div class="tag" onclick="selectCategory('Posessió', this)">Posessió</div>
+                        <div class="tag" onclick="selectCategory('Finalització', this)">Finalització</div>
+                        <div class="tag" onclick="selectCategory('Estratègia', this)">Estratègia</div>
+                        <div class="tag" onclick="selectCategory('Roda de Passes', this)">Roda de Passes</div>
+                    </div>
+                    
+                    <input type="text" id="exercise-title" class="input-text-main" 
+                           placeholder="Títol de l'exercici..." 
+                           style="font-weight:bold; font-size:1.1rem;">
+                    
+                    <textarea id="exercise-notes" class="input-text-main" 
+                              style="height:80px; resize:none; line-height:1.5;" 
+                              placeholder="Descripció i metodologia..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <aside class="right-panel" onclick="event.stopPropagation()">
+            <div class="panel-card fade-in">
+                <div class="input-label">Mida Objectes (Global)</div>
+                <input type="range" id="global-obj-size" min="0.3" max="1.7" step="0.1" 
+                       value="0.4" oninput="changeGlobalObjectSize(this.value)" 
+                       class="range-slider">
+                
+                <div class="input-label" style="margin-top:var(--spacing-lg);">Colors</div>
+                <div class="color-picker" id="color-picker">
+                    <div class="color-dot active" style="background:#ffffff" 
+                         onclick="setSelectedColor('#ffffff', this)"></div>
+                    <div class="color-dot" style="background:#ef4444" 
+                         onclick="setSelectedColor('#ef4444', this)"></div>
+                    <div class="color-dot" style="background:#3b82f6" 
+                         onclick="setSelectedColor('#3b82f6', this)"></div>
+                    <div class="color-dot" style="background:#f59e0b" 
+                         onclick="setSelectedColor('#f59e0b', this)"></div>
+                    <div class="color-dot" style="background:#10b981" 
+                         onclick="setSelectedColor('#10b981', this)"></div>
+                </div>
+
+                <div id="panel-controls">
+                    <div class="input-label">Element Seleccionat</div>
+                    
+                    <div class="control-group">
+                        <input type="range" id="indiv-size" min="0.3" max="2.0" step="0.1" 
+                               oninput="applyChange('size', this.value)" class="range-slider">
+                    </div>
+                    
+                    <input type="text" id="input-text" maxlength="3" placeholder="Número" 
+                           oninput="applyChange('text', this.value)" 
+                           class="input-text-main" 
+                           style="text-align:center; display:none;">
+                    
+                    <div class="button-group">
+                        <button class="icon-btn rotate" onclick="applyChange('rotate')">
+                            <i class="fas fa-redo"></i> Girar
+                        </button>
+                        <button class="icon-btn delete" onclick="deleteObj()">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="no-sel-msg">
+                    <i class="fas fa-mouse-pointer" style="font-size:1.5rem; margin-bottom:8px;"></i>
+                    <div>Selecciona un element per editar-lo</div>
+                </div>
+            </div>
+            
+            <div style="margin-top:auto; display:flex; flex-direction:column; gap:var(--spacing-sm);">
+                <button class="action-btn primary" style="background:linear-gradient(135deg, #8b5cf6, #7c3aed);" 
+                        id="btn-submit" onclick="submitExercise()">
+                    <i class="fas fa-cloud-upload-alt"></i> Publicar Exercici
+                </button>
+                
+                <button class="action-btn secondary" onclick="undo()">
+                    <i class="fas fa-undo"></i> Desfer Última Acció
+                </button>
+                
+                <button class="action-btn danger" onclick="clearPitch()">
+                    <i class="fas fa-broom"></i> Netejar Tot
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        const pitch = document.getElementById('pitch-container');
+        const linesLayer = document.getElementById('lines-layer');
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        const overlay = document.getElementById('draw-overlay');
+        
+        let isFullPitch = true, mode = 'select', selectedEl = null, paths = [], isDrawing = false, sX, sY;
+        let activeColor = "#ffffff";
+        let globalScale = 1.0;
+        
+        // --- LOGICA CATEGORIA ---
+        let selectedCategoryName = "Escalfament";
+
+        function selectCategory(name, el) {
+            document.querySelectorAll('#category-selector .tag').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            selectedCategoryName = name;
+            console.log("Categoria canviada a: " + selectedCategoryName);
+        }
+        // --- FI LOGICA CATEGORIA ---
+
+        function toggleTheme() { document.body.classList.toggle('light-mode'); }
+
+        function setSelectedColor(hex, el) {
+            activeColor = hex;
+            document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+            el.classList.add('active');
+            if(selectedEl) applyChange('color', hex);
+        }
+
+        function changeGlobalObjectSize(val) {
+            globalScale = val;
+            document.querySelectorAll('.element').forEach(el => {
+                const indivScale = el.dataset.indivScale || 1.0;
+                const totalScale = globalScale * indivScale;
+                el.style.transform = `translate(-50%, -50%) rotate(${el.dataset.rot}deg) scale(${totalScale})`;
+            });
+        }
+
+        function initPitch() {
+            const wrap = document.getElementById('pitch-wrapper');
+            const W = wrap.clientWidth - 40; const H = wrap.clientHeight - 40;
+            if (isFullPitch) {
+                if (W / 1.5 < H) { pitch.style.width = W + 'px'; pitch.style.height = (W / 1.5) + 'px'; }
+                else { pitch.style.height = H + 'px'; pitch.style.width = (H * 1.5) + 'px'; }
+                pitch.style.border = "4px solid white";
+            } else {
+                if (W / 1.2 < H) { pitch.style.width = W + 'px'; pitch.style.height = (W / 1.2) + 'px'; }
+                else { pitch.style.height = H + 'px'; pitch.style.width = (H * 1.2) + 'px'; }
+                pitch.style.border = "none";
+            }
+            canvas.width = pitch.clientWidth; canvas.height = pitch.clientHeight;
+            renderLines(); redrawPaths();
+        }
+
+        function renderLines() {
+            linesLayer.innerHTML = '';
+            if (!isFullPitch) return; 
+            const c = "rgba(255,255,255,0.95)";
+            const h = pitch.clientHeight;
+            let html = `
+                <div class="line-white" style="left:0; top:20%; width:16%; height:60%; border-left:none;"></div>
+                <div class="line-white" style="right:0; top:20%; width:16%; height:60%; border-right:none;"></div>
+                <div class="line-white" style="left:0; top:35%; width:6%; height:30%; border-left:none;"></div>
+                <div class="line-white" style="right:0; top:35%; width:6%; height:30%; border-right:none;"></div>
+                <div style="position:absolute; left:50%; top:0; width:3px; height:100%; background:${c}"></div>
+                <div style="position:absolute; left:50%; top:50%; width:${h*0.3}px; height:${h*0.3}px; border:3px solid ${c}; border-radius:50%; transform:translate(-50%,-50%)"></div>
+            `;
+            linesLayer.innerHTML = html;
+        }
+
+        function dragStart(ev, type) { ev.dataTransfer.setData("type", type); }
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drop(ev) {
+            ev.preventDefault();
+            const rect = pitch.getBoundingClientRect();
+            addObject(ev.dataTransfer.getData("type"), ev.clientX - rect.left, ev.clientY - rect.top);
+        }
+
+        function addObject(type, x, y) {
+            const el = document.createElement('div');
+            el.className = 'element'; el.dataset.type = type;
+            el.dataset.indivScale = 1.0; 
+            el.dataset.rot = 0;
+            el.style.color = activeColor;
+            
+            if(type.startsWith('p-')) {
+                // MODIFICACIÓ: Utilitzar activeColor en lloc de colors fixos
+                el.innerHTML = `<div class="player" style="background:${activeColor}">1</div>`;
+            } else if(type === 'cone') {
+                el.innerHTML = `<div class="cone-obj" style="border-bottom-color:${activeColor}"></div>`;
+            } else if(type === 'goal') {
+                el.innerHTML = `<div class="goal-visual" style="border-color:${activeColor}"></div>`;
+            } else if(type === 'valla') {
+                el.innerHTML = `<div style="width:45px; height:8px; border:2px solid ${activeColor};"></div>`;
+            } else if(type === 'ball') {
+                el.innerHTML = `<i class="fas fa-futbol" style="color:${activeColor}; font-size:24px;"></i>`;
+            }
+            el.style.transform = `translate(-50%, -50%) rotate(0deg) scale(${globalScale})`;
+            makeDraggable(el);
+            pitch.appendChild(el); 
+            el.style.left = x + 'px'; el.style.top = y + 'px';
+            selectObject(el);
+        }
+
+        function makeDraggable(el) {
+            el.onmousedown = el.ontouchstart = (e) => {
+                e.stopPropagation(); if(mode !== 'select') return;
+                selectObject(el);
+                const startX = e.touches ? e.touches[0].clientX : e.clientX;
+                const startY = e.touches ? e.touches[0].clientY : e.clientY;
+                const offsetL = el.offsetLeft; const offsetT = el.offsetTop;
+
+                const move = (me) => {
+                    const mx = me.touches ? me.touches[0].clientX : me.clientX;
+                    const my = me.touches ? me.touches[0].clientY : me.clientY;
+                    el.style.left = (offsetL + (mx - startX)) + 'px'; 
+                    el.style.top = (offsetT + (my - startY)) + 'px';
+                };
+                const stop = () => { document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', stop); document.removeEventListener('touchmove', move); document.removeEventListener('touchend', stop); };
+                document.addEventListener('mousemove', move); document.addEventListener('mouseup', stop);
+                document.addEventListener('touchmove', move, {passive:false}); document.addEventListener('touchend', stop);
+            };
+        }
+
+        function createLadderObject(x1, y1, x2, y2, color) {
+            const dist = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            if(dist < 20) return;
+            const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI) + 90;
+            const centerX = (x1 + x2) / 2; const centerY = (y1 + y2) / 2;
+            const el = document.createElement('div');
+            el.className = 'element'; el.dataset.type = 'ladder';
+            el.dataset.rot = angle; el.dataset.indivScale = 1.0;
+            el.style.color = color;
+            const stepsCount = Math.max(2, Math.floor(dist / 25));
+            let stepsHtml = '';
+            for(let i=0; i<=stepsCount; i++) stepsHtml += `<div class="ladder-step-line"></div>`;
+            el.innerHTML = `<div class="ladder-body" style="width:35px; height:${dist}px;">${stepsHtml}</div>`;
+            el.style.left = centerX + 'px'; el.style.top = centerY + 'px';
+            el.style.transform = `translate(-50%, -50%) rotate(${angle}deg) scale(${globalScale})`;
+            makeDraggable(el);
+            pitch.appendChild(el);
+            selectObject(el);
+        }
+
+        function selectObject(el) {
+            document.querySelectorAll('.element').forEach(i => i.classList.remove('selected'));
+            selectedEl = el; el.classList.add('selected');
+            document.getElementById('panel-controls').style.display = 'block';
+            document.getElementById('no-sel-msg').style.display = 'none';
+            document.getElementById('indiv-size').value = el.dataset.indivScale || 1.0;
+            const p = el.querySelector('.player');
+            document.getElementById('input-text').style.display = p ? 'block' : 'none';
+            if(p) document.getElementById('input-text').value = p.innerText;
+        }
+
+        function setMode(m) { 
+            mode = m; 
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.getElementById('m-'+m);
+            if(btn) btn.classList.add('active');
+            overlay.style.display = (m === 'select') ? 'none' : 'block'; 
+        }
+
+        function applyChange(type, val) {
+            if(!selectedEl) return;
+            if(type === 'size') selectedEl.dataset.indivScale = val;
+            if(type === 'rotate') selectedEl.dataset.rot = (parseInt(selectedEl.dataset.rot) + 45) % 360;
+            if(type === 'color') {
+                selectedEl.style.color = val;
+                const cone = selectedEl.querySelector('.cone-obj');
+                if(cone) cone.style.borderBottomColor = val;
+                const goal = selectedEl.querySelector('.goal-visual');
+                if(goal) goal.style.borderColor = val;
+                const ladder = selectedEl.querySelector('.ladder-body');
+                if(ladder) ladder.style.color = val;
+                // MODIFICACIÓ: Afegir canvi de color per als jugadors
+                const player = selectedEl.querySelector('.player');
+                if(player) player.style.background = val;
+                // MODIFICACIÓ: Afegir canvi de color per a la valla
+                const valla = selectedEl.querySelector('[style*="border:2px solid"]');
+                if(valla) valla.style.borderColor = val;
+                // MODIFICACIÓ: Afegir canvi de color per a la pilota
+                const ballIcon = selectedEl.querySelector('.fa-futbol');
+                if(ballIcon) ballIcon.style.color = val;
+            }
+            const totalScale = globalScale * parseFloat(selectedEl.dataset.indivScale);
+            selectedEl.style.transform = `translate(-50%, -50%) rotate(${selectedEl.dataset.rot}deg) scale(${totalScale})`;
+            if(type === 'text') { const p = selectedEl.querySelector('.player'); if(p) p.innerText = val; }
+        }
+
+        function togglePitchType() { 
+            isFullPitch = !isFullPitch; 
+            initPitch(); 
+            document.getElementById('pitch-type-text').textContent = 
+                isFullPitch ? "Amb Línies" : "Sense Línies";
+        }
+        
+        function deleteObj() { if(selectedEl) { selectedEl.remove(); deselectAll(); } }
+        function deselectAll() { 
+            document.querySelectorAll('.element').forEach(i => i.classList.remove('selected')); 
+            selectedEl = null; 
+            document.getElementById('panel-controls').style.display = 'none'; 
+            document.getElementById('no-sel-msg').style.display = 'block'; 
+        }
+        
+        function handleGlobalClick(e) { 
+            if (!e.target.closest('.element') && !e.target.closest('aside') && !e.target.closest('header')) 
+                deselectAll(); 
+        }
+        
+        function clearPitch() { 
+            document.querySelectorAll('.element').forEach(e => e.remove()); 
+            paths = []; 
+            redrawPaths(); 
+        }
+
+        overlay.onmousedown = overlay.ontouchstart = (e) => {
+            isDrawing = true; const rect = pitch.getBoundingClientRect();
+            const cx = e.touches ? e.touches[0].clientX : e.clientX;
+            const cy = e.touches ? e.touches[0].clientY : e.clientY;
+            sX = cx - rect.left; sY = cy - rect.top;
+        };
+
+        overlay.onmousemove = overlay.ontouchmove = (e) => {
+            if(!isDrawing) return; const rect = pitch.getBoundingClientRect();
+            const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+            const cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+            redrawPaths();
+            if(mode === 'ladder') drawLadderPreview(ctx, sX, sY, cx, cy, activeColor);
+            else drawArrow(ctx, sX, sY, cx, cy, mode==='dash', activeColor);
+        };
+
+        overlay.onmouseup = overlay.ontouchend = (e) => {
+            if(!isDrawing) return; isDrawing = false;
+            const rect = pitch.getBoundingClientRect();
+            const cx = (e.clientX || (e.changedTouches ? e.changedTouches[0].clientX : sX)) - rect.left;
+            const cy = (e.clientY || (e.changedTouches ? e.changedTouches[0].clientY : sY)) - rect.top;
+            if(mode === 'ladder') createLadderObject(sX, sY, cx, cy, activeColor);
+            else paths.push({x1:sX, y1:sY, x2: cx, y2: cy, dash:mode==='dash', type: mode, color: activeColor});
+            redrawPaths();
+        };
+
+        function drawLadderPreview(c, x1, y1, x2, y2, color) {
+            const dist = Math.sqrt(Math.pow(x2-x1,2) + Math.pow(y2-y1,2));
+            const angle = Math.atan2(y2-y1, x2-x1);
+            const steps = Math.max(2, Math.floor(dist / 30));
+            c.save(); c.translate(x1, y1); c.rotate(angle);
+            c.beginPath(); c.lineWidth = 3; c.strokeStyle = color;
+            c.moveTo(0, -15); c.lineTo(dist, -15); c.moveTo(0, 15); c.lineTo(dist, 15);
+            for(let i=0; i<=steps; i++) { let x = (dist/steps)*i; c.moveTo(x, -15); c.lineTo(x, 15); }
+            c.stroke(); c.restore();
+        }
+
+        function drawArrow(c, x1, y1, x2, y2, dash, color) {
+            c.beginPath(); c.lineWidth = 4; c.strokeStyle = color;
+            if(dash) c.setLineDash([10, 10]); else c.setLineDash([]);
+            c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke();
+            const angle = Math.atan2(y2-y1, x2-x1);
+            c.setLineDash([]); c.beginPath(); c.moveTo(x2, y2);
+            c.lineTo(x2-15*Math.cos(angle-0.5), y2-15*Math.sin(angle-0.5));
+            c.lineTo(x2-15*Math.cos(angle+0.5), y2-15*Math.sin(angle+0.5));
+            c.closePath(); c.fillStyle = color; c.fill();
+        }
+
+        function redrawPaths() { 
+            ctx.clearRect(0,0,canvas.width, canvas.height); 
+            paths.forEach(p => drawArrow(ctx, p.x1, p.y1, p.x2, p.y2, p.dash, p.color)); 
+        }
+
+        function undo() { paths.pop(); redrawPaths(); }
+
+        function downloadImage() {
+            deselectAll();
+            html2canvas(pitch, { useCORS: true, scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'tactica.png'; link.href = canvas.toDataURL(); link.click();
+            });
+        }
+        window.onload = () => { initPitch(); window.addEventListener('resize', initPitch); };
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBaxLhVUekJLCyrtvQaF7t_-1dTERbvAE",
+            authDomain: "soccertrainlab.firebaseapp.com",
+            projectId: "soccertrainlab",
+            storageBucket: "soccertrainlab.firebasestorage.app",
+            messagingSenderId: "681099221197",
+            appId: "1:681099221197:web:55ae8621c8bc8649057184"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) window.location.href = "login.html?mode=login";
+            else currentUser = user;
+        });
+
+        window.submitExercise = async function() {
+            if (!currentUser) return alert("Inicia sessió primer.");
+            const btn = document.getElementById('btn-submit');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publicant...';
+            btn.disabled = true;
+            const pW = pitch.clientWidth; const pH = pitch.clientHeight;
+            try {
+                const exerciseData = {
+                    autor: currentUser.email, uid: currentUser.uid, timestamp: new Date().toISOString(), 
+                    estat: "pendent", 
+                    tipus: selectedCategoryName,
+                    title: document.getElementById('exercise-title').value || "Sense títol",
+                    notes: document.getElementById('exercise-notes').value || "", isFullPitch: isFullPitch,
+                    paths: paths.map(p => ({ x1:(p.x1/pW)*100, y1:(p.y1/pH)*100, x2:(p.x2/pW)*100, y2:(p.y2/pH)*100, dash:p.dash, type:p.type, color: p.color })),
+                    objects: []
+                };
+                document.querySelectorAll('.element').forEach(el => {
+                    const objData = { 
+                        type:el.dataset.type, 
+                        x:(parseFloat(el.style.left)/pW)*100, 
+                        y:(parseFloat(el.style.top)/pH)*100, 
+                        rot:el.dataset.rot||0, 
+                        scale:(globalScale * (parseFloat(el.dataset.indivScale)||1.0)), 
+                        color: el.style.color || "#ffffff",
+                        text:el.querySelector('.player')?.innerText||"" 
+                    };
+                    
+                    if(el.dataset.type === 'ladder') {
+                        const ladderBody = el.querySelector('.ladder-body');
+                        if(ladderBody) objData.h = ladderBody.style.height;
+                    }
+                    
+                    exerciseData.objects.push(objData);
+                });
+                await addDoc(collection(db, "exercicis"), exerciseData);
+                alert("🚀 Exercici enviat per a revisió!");
+                clearPitch();
+            } catch (e) { alert("Error: " + e.message); } finally { btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Publicar Exercici'; btn.disabled = false; }
+        };
+    </script>
+</body>
+</html>

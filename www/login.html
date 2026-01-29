@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | TrainLab Pro Elite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ====== VARIABLES DE DISSENY PREMIUM ====== */
+        :root {
+            --primary: #3b82f6;
+            --primary-light: #60a5fa;
+            --primary-dark: #2563eb;
+            --accent: #10b981;
+            --accent-light: #34d399;
+            --entrenador: #8b5cf6;
+            --familiar: #06b6d4;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-card: #1e293b;
+            --bg-input: #0f172a;
+            
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --border: rgba(255, 255, 255, 0.08);
+            --border-light: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(59, 130, 246, 0.5);
+            
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.4);
+            --shadow-xl: 0 30px 60px rgba(0, 0, 0, 0.5);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 24px;
+            --radius-full: 9999px;
+            
+            --transition-fast: 150ms ease;
+            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms ease;
+            
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+        }
+
+        /* ====== RESET I BASE ====== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-md);
+            position: relative;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ====== FONS AMB EFECTE ====== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ====== CARD D'AUTENTICACIÓ ====== */
+        .auth-container {
+            width: 100%;
+            max-width: 480px;
+            perspective: 1000px;
+        }
+
+        .auth-card {
+            background: var(--bg-card);
+            padding: var(--spacing-2xl);
+            border-radius: var(--radius-2xl);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-xl);
+            backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+            transition: transform var(--transition-slow), box-shadow var(--transition-slow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-card:hover {
+            transform: translateY(-5px) rotateX(2deg);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            z-index: 1;
+        }
+
+        /* ====== CAPÇALERA ====== */
+        .auth-header {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+            position: relative;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-text {
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .auth-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .auth-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        /* ====== SELECTOR DE ROL ====== */
+        .role-selector {
+            margin: var(--spacing-xl) 0;
+        }
+
+        .role-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .role-option {
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-input);
+        }
+
+        .role-option:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-light);
+        }
+
+        .role-option.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.05));
+            box-shadow: var(--shadow-md);
+        }
+
+        .role-option.entrenador.selected {
+            border-color: var(--entrenador);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.05));
+        }
+
+        .role-option.familiar.selected {
+            border-color: var(--familiar);
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(16, 185, 129, 0.05));
+        }
+
+        .role-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .role-option.entrenador .role-icon {
+            color: var(--entrenador);
+        }
+
+        .role-option.familiar .role-icon {
+            color: var(--familiar);
+        }
+
+        .role-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .role-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* ====== CAMP DE CÓDIG D'EQUIP ====== */
+        .team-code-section {
+            animation: slideInUp var(--transition-base);
+            animation-fill-mode: both;
+            animation-delay: 0.2s;
+        }
+
+        .team-code-info {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid var(--familiar);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .team-code-info i {
+            color: var(--familiar);
+            margin-right: var(--spacing-xs);
+        }
+
+        /* ====== FORMULARI ====== */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .input-group {
+            position: relative;
+            animation: slideInUp var(--transition-base);
+            animation-fill-mode: both;
+        }
+
+        .input-group:nth-child(1) { animation-delay: 0.1s; }
+        .input-group:nth-child(2) { animation-delay: 0.15s; }
+        .input-group:nth-child(3) { animation-delay: 0.2s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all var(--transition-base);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--border-focus);
+            transform: translateY(-2px);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+            transition: color var(--transition-base);
+        }
+
+        .input-field:focus + .input-icon {
+            color: var(--primary);
+        }
+
+        /* ====== BOTÓ DE MOSTRAR CONTRASENYA ====== */
+        .password-toggle {
+            position: absolute;
+            right: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-base);
+            z-index: 2;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ====== ENLLAÇ OBLIDAR CONTRASENYA ====== */
+        .forgot-link {
+            display: inline-block;
+            text-align: right;
+            font-size: 0.875rem;
+            color: var(--primary-light);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition-base);
+            font-weight: 500;
+            margin-top: var(--spacing-xs);
+            align-self: flex-end;
+        }
+
+        .forgot-link:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        /* ====== BOTÓ PRINCIPAL ====== */
+        .auth-button {
+            width: 100%;
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: var(--radius-lg);
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: var(--shadow-md);
+            margin-top: var(--spacing-sm);
+            animation: slideInUp var(--transition-base);
+            animation-delay: 0.3s;
+            animation-fill-mode: both;
+        }
+
+        .auth-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        }
+
+        .auth-button:active {
+            transform: translateY(0);
+        }
+
+        .auth-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ====== CANVI DE MODE ====== */
+        .switch-mode {
+            text-align: center;
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-xl);
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            animation: slideInUp var(--transition-base);
+            animation-delay: 0.4s;
+            animation-fill-mode: both;
+        }
+
+        .switch-link {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all var(--transition-base);
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-size: inherit;
+            padding: 0;
+        }
+
+        .switch-link:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+
+        /* ====== ENLLAÇ TORNAR ====== */
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            margin-top: var(--spacing-xl);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all var(--transition-base);
+            animation: slideInUp var(--transition-base);
+            animation-delay: 0.5s;
+            animation-fill-mode: both;
+            align-self: center;
+        }
+
+        .back-home:hover {
+            color: var(--text-primary);
+            transform: translateX(-5px);
+        }
+
+        /* ====== ESTATS I FEEDBACK ====== */
+        .hidden {
+            display: none !important;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.875rem;
+            margin-top: var(--spacing-xs);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .success-message {
+            color: var(--accent);
+            font-size: 0.875rem;
+            margin-top: var(--spacing-xs);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            animation: fadeIn var(--transition-base);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ====== LOADING SPINNER ====== */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ====== RESPONSIVE ====== */
+        @media (max-width: 520px) {
+            .auth-card {
+                padding: var(--spacing-xl);
+            }
+            
+            .role-options {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-sm);
+            }
+            
+            .auth-title {
+                font-size: 1.75rem;
+            }
+            
+            .logo-text {
+                font-size: 1.5rem;
+            }
+            
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-height: 700px) {
+            body {
+                padding: var(--spacing-sm);
+            }
+            
+            .auth-card {
+                padding: var(--spacing-lg);
+            }
+        }
+
+        /* ====== SCROLLBAR PERSONALITZADA ====== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-input);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-futbol"></i>
+                    </div>
+                    <div class="logo-text">TRAINLAB</div>
+                </div>
+                
+                <h1 class="auth-title" id="auth-title">CREAR COMPTE</h1>
+                <p class="auth-subtitle" id="auth-subtitle">
+                    Selecciona el teu rol per començar a utilitzar TrainLab
+                </p>
+            </div>
+
+            <!-- SELECTOR DE ROL -->
+            <div class="role-selector">
+                <div class="role-options">
+                    <div class="role-option entrenador" data-role="entrenador">
+                        <div class="role-icon">
+                            <i class="fas fa-whistle"></i>
+                        </div>
+                        <div class="role-name">Entrenador/Staff</div>
+                        <div class="role-desc">
+                            Pots crear equips, gestionar jugadors i enviar avisos
+                        </div>
+                    </div>
+                    
+                    <div class="role-option familiar selected" data-role="familiar">
+                        <div class="role-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="role-name">Familiar/Jugador</div>
+                        <div class="role-desc">
+                            Pots unir-te a equips existents i rebre avisos
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form class="auth-form" id="authForm">
+                <!-- Camp Nom (visible sempre) -->
+                <div class="input-group">
+                    <label class="input-label" for="name">Nom Complet</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="name" 
+                            class="input-field" 
+                            placeholder="El teu nom i cognoms"
+                            autocomplete="name"
+                            required
+                        >
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Camp Email -->
+                <div class="input-group">
+                    <label class="input-label" for="email">Correu Electrònic</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="email" 
+                            id="email" 
+                            class="input-field" 
+                            placeholder="exemple@email.com"
+                            autocomplete="email"
+                            required
+                        >
+                        <div class="input-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Camp Contrasenya -->
+                <div class="input-group">
+                    <label class="input-label" for="password">Contrasenya</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            class="input-field" 
+                            placeholder="Mínim 6 caràcters"
+                            autocomplete="new-password"
+                            required
+                        >
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <button type="button" class="password-toggle" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Camp Código de Equipo (solo para Familiares/Jugadores) -->
+                <div class="input-group team-code-section hidden" id="teamCodeGroup">
+                    <label class="input-label" for="teamCode">Codi de l'Equip</label>
+                    <div class="team-code-info">
+                        <i class="fas fa-info-circle"></i>
+                        Demana el codi al teu entrenador. Si no en tens, pots afegir-lo després.
+                    </div>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="teamCode" 
+                            class="input-field" 
+                            placeholder="Ex: EQUIP2024"
+                            autocomplete="off"
+                        >
+                        <div class="input-icon">
+                            <i class="fas fa-hashtag"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mensajes de Error/Éxito -->
+                <div id="errorContainer" class="error-message hidden">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorText"></span>
+                </div>
+
+                <div id="successContainer" class="success-message hidden">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="successText"></span>
+                </div>
+
+                <!-- Botón Registrarse -->
+                <button type="button" class="auth-button" id="auth-btn">
+                    <span id="btnText">REGISTRAR-ME</span>
+                    <div class="spinner hidden" id="spinner"></div>
+                </button>
+
+                <!-- Cambiar a Login -->
+                <div class="switch-mode" id="toggle-auth">
+                    <span id="toggle-text-full">
+                        Ja tens un compte? 
+                        <button class="switch-link" id="toggle-text">Inicia sessió</button>
+                    </span>
+                </div>
+
+                <a href="index.html" class="back-home">
+                    <i class="fas fa-arrow-left"></i>
+                    Tornar a l'inici
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            sendPasswordResetEmail 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc, 
+            collection, 
+            query, 
+            where, 
+            getDocs,
+            updateDoc,
+            arrayUnion 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Configuració Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBaxLhVUekJLCyrtvQaF7t_-1dTERbvAE",
+            authDomain: "soccertrainlab.firebaseapp.com",
+            projectId: "soccertrainlab",
+            storageBucket: "soccertrainlab.firebasestorage.app",
+            messagingSenderId: "681099221197",
+            appId: "1:681099221197:web:55ae8621c8bc8649057184"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- ELEMENTS DEL DOM ---
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const teamCodeInput = document.getElementById('teamCode');
+        const teamCodeGroup = document.getElementById('teamCodeGroup');
+        const authBtn = document.getElementById('auth-btn');
+        const authTitle = document.getElementById('auth-title');
+        const authSubtitle = document.getElementById('auth-subtitle');
+        const toggleAuthText = document.getElementById('toggle-text-full');
+        const forgotLink = document.getElementById('forgot-pass');
+        const togglePassword = document.getElementById('togglePassword');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('spinner');
+        const errorContainer = document.getElementById('errorContainer');
+        const errorText = document.getElementById('errorText');
+        const successContainer = document.getElementById('successContainer');
+        const successText = document.getElementById('successText');
+        const roleOptions = document.querySelectorAll('.role-option');
+
+        let isLoginMode = false;
+        let selectedRole = 'familiar';
+
+        // 1. Selecció de Rol
+        roleOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Remover selecció anterior
+                roleOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // Agregar selecció actual
+                option.classList.add('selected');
+                
+                // Actualizar rol seleccionado
+                selectedRole = option.getAttribute('data-role');
+                
+                // Mostrar/ocultar campo de código de equipo
+                if (selectedRole === 'familiar') {
+                    teamCodeGroup.classList.remove('hidden');
+                } else {
+                    teamCodeGroup.classList.add('hidden');
+                    teamCodeInput.value = '';
+                }
+                
+                // Actualizar texto descriptivo
+                updateRoleDescription();
+            });
+        });
+
+        function updateRoleDescription() {
+            if (selectedRole === 'entrenador') {
+                authSubtitle.innerText = "Crea equips, gestiona jugadors i envia avisos als teus equips";
+            } else {
+                authSubtitle.innerText = "Uneix-te a equips existents i rep avisos del teu entrenador";
+            }
+        }
+
+        // 2. Canviar entre Login i Registre
+        function switchMode(toLogin) {
+            isLoginMode = toLogin;
+            authTitle.innerText = isLoginMode ? "INICIAR SESSIÓ" : "CREAR COMPTE";
+            
+            if (isLoginMode) {
+                // Modo Login
+                authSubtitle.innerText = "Accedeix al teu compte per continuar amb TrainLab";
+                btnText.innerText = "ENTRAR";
+                document.querySelector('.role-selector').classList.add('hidden');
+                nameInput.parentElement.classList.add('hidden');
+                teamCodeGroup.classList.add('hidden');
+                
+                toggleAuthText.innerHTML = 
+                    'Encara no tens compte? <button class="switch-link" id="toggle-text">Crea\'n un</button>';
+            } else {
+                // Modo Registro
+                authSubtitle.innerText = "Selecciona el teu rol per començar a utilitzar TrainLab";
+                btnText.innerText = "REGISTRAR-ME";
+                document.querySelector('.role-selector').classList.remove('hidden');
+                nameInput.parentElement.classList.remove('hidden');
+                updateRoleDescription();
+                
+                toggleAuthText.innerHTML = 
+                    'Ja tens un compte? <button class="switch-link" id="toggle-text">Inicia sessió</button>';
+            }
+            
+            // Re-assignar evento al nuevo botón
+            document.getElementById('toggle-text').onclick = () => switchMode(!isLoginMode);
+            
+            // Netejar missatges
+            hideMessages();
+            clearForm();
+        }
+
+        // 3. Veure / Ocultar Contrasenya
+        togglePassword.onclick = () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePassword.innerHTML = type === 'password' 
+                ? '<i class="fas fa-eye"></i>' 
+                : '<i class="fas fa-eye-slash"></i>';
+        };
+
+        // 4. Funció per unir-se a un equip amb codi
+        async function joinTeamWithCode(userId, teamCode) {
+            try {
+                if (!teamCode.trim()) return null; // Si no hi ha codi, retorna null
+                
+                // Buscar equip per codi
+                const teamsRef = collection(db, 'equips');
+                const q = query(teamsRef, where('codi', '==', teamCode.toUpperCase()));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    throw new Error('Codi d\'equip no vàlid');
+                }
+                
+                const teamDoc = querySnapshot.docs[0];
+                const teamData = teamDoc.data();
+                
+                // Verificar si l'usuari ja està a l'equip
+                if (teamData.membres && teamData.membres.includes(userId)) {
+                    return teamDoc.id; // Ja està a l'equip
+                }
+                
+                // Afegir usuari a l'equip
+                await updateDoc(doc(db, 'equips', teamDoc.id), {
+                    membres: arrayUnion(userId)
+                });
+                
+                return teamDoc.id; // Retorna l'ID de l'equip
+                
+            } catch (error) {
+                console.error('Error unint-se a l\'equip:', error);
+                throw error;
+            }
+        }
+
+        // 5. Funció per crear usuari a Firestore
+        async function createUserInFirestore(userId, userData) {
+            try {
+                await setDoc(doc(db, 'usuaris', userId), {
+                    ...userData,
+                    dataCreacio: new Date().toISOString(),
+                    actiu: true
+                });
+                
+                console.log('Usuari creat a Firestore:', userId);
+            } catch (error) {
+                console.error('Error creant usuari a Firestore:', error);
+                throw error;
+            }
+        }
+
+        // 6. Funció principal de registre/login
+        authBtn.onclick = async () => {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                showError("Omple tots els camps obligatoris.");
+                return;
+            }
+
+            if (!isLoginMode && !nameInput.value.trim()) {
+                showError("Introdueix el teu nom.");
+                return;
+            }
+
+            setLoading(true);
+            hideMessages();
+
+            try {
+                if (isLoginMode) {
+                    // MODO LOGIN
+                    await signInWithEmailAndPassword(auth, email, password);
+                    showSuccess("Sessió iniciada correctament!");
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 1500);
+                    
+                } else {
+                    // MODO REGISTRO
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+                    
+                    // Preparar dades per Firestore
+                    const userData = {
+                        nom: nameInput.value.trim(),
+                        email: email,
+                        rol: selectedRole,
+                        equipId: null,
+                        equipNom: null
+                    };
+                    
+                    // Si és familiar i té codi d'equip, unir-se
+                    if (selectedRole === 'familiar' && teamCodeInput.value.trim()) {
+                        try {
+                            const teamId = await joinTeamWithCode(user.uid, teamCodeInput.value.trim());
+                            if (teamId) {
+                                userData.equipId = teamId;
+                                // Podríem obtenir el nom de l'equip aquí si és necessari
+                            }
+                        } catch (teamError) {
+                            // Si hi ha error amb el codi, continuem amb el registre igualment
+                            console.warn('Error amb el codi d\'equip:', teamError.message);
+                        }
+                    }
+                    
+                    // Crear usuari a Firestore
+                    await createUserInFirestore(user.uid, userData);
+                    
+                    showSuccess("Compte creat correctament!");
+                    
+                    // Redirigir segons el rol
+                    setTimeout(() => {
+                        if (selectedRole === 'entrenador') {
+                            window.location.href = "dashboard-entrenador.html";
+                        } else {
+                            window.location.href = "dashboard-familiar.html";
+                        }
+                    }, 2000);
+                }
+                
+            } catch (error) {
+                let errorMessage = "Error: " + error.message;
+                
+                // Traduir errors comuns
+                const errorTranslations = {
+                    'auth/invalid-email': 'Correu electrònic invàlid',
+                    'auth/user-disabled': 'Aquest compte està deshabilitat',
+                    'auth/user-not-found': 'No hi ha cap compte amb aquest correu',
+                    'auth/wrong-password': 'Contrasenya incorrecta',
+                    'auth/email-already-in-use': 'Aquest correu ja està registrat',
+                    'auth/weak-password': 'La contrasenya ha de tenir almenys 6 caràcters',
+                    'auth/operation-not-allowed': 'Operació no permesa',
+                    'auth/network-request-failed': 'Error de connexió. Verifica la teva xarxa.'
+                };
+                
+                if (errorTranslations[error.code]) {
+                    errorMessage = errorTranslations[error.code];
+                }
+                
+                showError(errorMessage);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        // Funcions auxiliares
+        function hideMessages() {
+            errorContainer.classList.add('hidden');
+            successContainer.classList.add('hidden');
+        }
+
+        function showError(message) {
+            errorText.textContent = message;
+            errorContainer.classList.remove('hidden');
+            successContainer.classList.add('hidden');
+        }
+
+        function showSuccess(message) {
+            successText.textContent = message;
+            successContainer.classList.remove('hidden');
+            errorContainer.classList.add('hidden');
+        }
+
+        function setLoading(isLoading) {
+            authBtn.disabled = isLoading;
+            spinner.classList.toggle('hidden', !isLoading);
+            btnText.classList.toggle('hidden', isLoading);
+        }
+
+        function clearForm() {
+            if (isLoginMode) {
+                nameInput.value = '';
+                teamCodeInput.value = '';
+            }
+        }
+
+        // Permetre submit amb Enter
+        document.getElementById('authForm').onsubmit = (e) => {
+            e.preventDefault();
+            authBtn.click();
+        };
+
+        // Focus al primer camp al carregar
+        window.onload = () => {
+            if (isLoginMode) {
+                emailInput.focus();
+            } else {
+                nameInput.focus();
+            }
+            
+            // Configurar el botó de toggle inicial
+            document.getElementById('toggle-text').onclick = () => switchMode(!isLoginMode);
+        };
+
+        // Recuperar contrasenya (si es vol implementar)
+        // forgotLink.onclick = async (e) => { ... }
+    </script>
+</body>
+</html>

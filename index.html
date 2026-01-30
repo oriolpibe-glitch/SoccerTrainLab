@@ -738,7 +738,10 @@
                     <li><a onclick="checkAccess(event, 'biblioteca.html')">Biblioteca</a></li>
                     <li><a onclick="checkAccess(event, 'planificacio.html')">Planificació</a></li>
                     <li><a onclick="checkAccess(event, 'partits.html')">Partits</a></li>
-                    <li><a href="#features">Funcions</a></li>
+                    <!-- Enlace solo para entrenadores -->
+                    <li id="nav-entrenador" class="hidden"><a href="dashboard-entrenador.html">Dashboard</a></li>
+                    <!-- Enlace solo para jugadores/familiares -->
+                    <li id="nav-jugador" class="hidden"><a href="familiar.html">Avisos</a></li>
                 </ul>
             </nav>
             
@@ -1008,6 +1011,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBBaxLhVUekJLCyrtvQaF7t_-1dTERbvAE",
@@ -1020,46 +1024,131 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         let currentUser = null;
+        let userRole = null;
 
-        onAuthStateChanged(auth, (user) => {
+        // Función para obtener el rol del usuario desde Firestore
+        async function getUserRole(userId) {
+            try {
+                const userDoc = await getDoc(doc(db, "users", userId));
+                if (userDoc.exists()) {
+                    return userDoc.data().role; // 'entrenador', 'jugador', o 'familiar'
+                }
+                return null;
+            } catch (error) {
+                console.error("Error obteniendo rol del usuario:", error);
+                return null;
+            }
+        }
+
+        onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             
             const loginBtn = document.getElementById('nav-login');
             const logoutBtn = document.getElementById('nav-logout');
             const welcomeMsg = document.getElementById('welcome-msg');
             const heroActions = document.querySelector('.hero-actions');
+            const navEntrenador = document.getElementById('nav-entrenador');
+            const navJugador = document.getElementById('nav-jugador');
 
             if (user) {
                 loginBtn.classList.add('hidden');
                 logoutBtn.classList.remove('hidden');
                 
-                // Personalizar mensaje de bienvenida
-                const userName = user.email.split('@')[0];
-                welcomeMsg.innerHTML = `
-                    Benvingut de nou, <span style="color: var(--primary);">${userName}</span>
-                `;
+                // Obtener rol del usuario
+                userRole = await getUserRole(user.uid);
                 
-                // Actualizar acciones del hero
-                heroActions.innerHTML = `
-                    <button onclick="checkAccess(event, 'crearejercic.html')" class="btn btn-primary">
-                        <i class="fas fa-play"></i>
-                        Continuar Dissenyant
-                    </button>
-                    <button onclick="checkAccess(event, 'biblioteca.html')" class="btn btn-outline">
-                        <i class="fas fa-book"></i>
-                        Veure Biblioteca
-                    </button>
-                    <button onclick="checkAccess(event, 'planificacio.html')" class="btn btn-outline">
-                        <i class="fas fa-calendar-alt"></i>
-                        Planificar
-                    </button>
-                `;
+                // Mostrar enlaces según el rol del usuario
+                if (userRole === 'entrenador') {
+                    navEntrenador.classList.remove('hidden');
+                    navJugador.classList.add('hidden');
+                } else if (userRole === 'jugador' || userRole === 'familiar') {
+                    navJugador.classList.remove('hidden');
+                    navEntrenador.classList.add('hidden');
+                } else {
+                    // Si no tiene rol definido, ocultar ambos
+                    navEntrenador.classList.add('hidden');
+                    navJugador.classList.add('hidden');
+                }
+                
+                // Personalizar mensaje de bienvenida según el rol
+                const userName = user.email.split('@')[0];
+                let roleText = '';
+                
+                if (userRole === 'entrenador') {
+                    roleText = 'Entrenador';
+                } else if (userRole === 'jugador') {
+                    roleText = 'Jugador';
+                } else if (userRole === 'familiar') {
+                    roleText = 'Familiar';
+                }
+                
+                if (roleText) {
+                    welcomeMsg.innerHTML = `
+                        Benvingut de nou, <span style="color: var(--primary);">${userName}</span>
+                        <div style="font-size: 1.2rem; margin-top: 10px; color: var(--secondary); font-weight: 600;">
+                            ${roleText}
+                        </div>
+                    `;
+                } else {
+                    welcomeMsg.innerHTML = `
+                        Benvingut de nou, <span style="color: var(--primary);">${userName}</span>
+                    `;
+                }
+                
+                // Actualizar acciones del hero según el rol
+                if (userRole === 'entrenador') {
+                    heroActions.innerHTML = `
+                        <button onclick="checkAccess(event, 'crearejercicio.html')" class="btn btn-primary">
+                            <i class="fas fa-play"></i>
+                            Continuar Dissenyant
+                        </button>
+                        <button onclick="checkAccess(event, 'biblioteca.html')" class="btn btn-outline">
+                            <i class="fas fa-book"></i>
+                            Veure Biblioteca
+                        </button>
+                        <button onclick="checkAccess(event, 'planificacio.html')" class="btn btn-outline">
+                            <i class="fas fa-calendar-alt"></i>
+                            Planificar
+                        </button>
+                    `;
+                } else if (userRole === 'jugador' || userRole === 'familiar') {
+                    heroActions.innerHTML = `
+                        <button onclick="checkAccess(event, 'familiar.html')" class="btn btn-primary">
+                            <i class="fas fa-bell"></i>
+                            Veure Avisos
+                        </button>
+                        <button onclick="checkAccess(event, 'planificacio.html')" class="btn btn-outline">
+                            <i class="fas fa-calendar-alt"></i>
+                            Calendari d'Entrenaments
+                        </button>
+                        <button onclick="checkAccess(event, 'partits.html')" class="btn btn-outline">
+                            <i class="fas fa-futbol"></i>
+                            Pròxims Partits
+                        </button>
+                    `;
+                }
             } else {
+                // Ocultar todos los enlaces específicos cuando no hay usuario
+                navEntrenador.classList.add('hidden');
+                navJugador.classList.add('hidden');
                 loginBtn.classList.remove('hidden');
                 logoutBtn.classList.add('hidden');
                 welcomeMsg.textContent = 'Eines Professionals per a Entrenadors de Futbol';
+                
+                // Restaurar acciones del hero por defecto
+                heroActions.innerHTML = `
+                    <button onclick="checkAccess(event, 'crearejercicio.html')" class="btn btn-primary">
+                        <i class="fas fa-play"></i>
+                        Començar a Dissenyar
+                    </button>
+                    <a href="#features" class="btn btn-text">
+                        <i class="fas fa-info-circle"></i>
+                        Veure més informació
+                    </a>
+                `;
             }
         });
 
@@ -1067,6 +1156,17 @@
             if (event) event.preventDefault();
             
             if (currentUser) {
+                // Verificar acceso específico según rol
+                if (targetUrl === 'dashboard-entrenador.html' && userRole !== 'entrenador') {
+                    showMessage('error', 'Accés denegat', 'Només els entrenadors poden accedir al Dashboard.');
+                    return;
+                }
+                
+                if (targetUrl === 'familiar.html' && !(userRole === 'jugador' || userRole === 'familiar')) {
+                    showMessage('error', 'Accés denegat', 'Només jugadors i familiars poden accedir als Avisos.');
+                    return;
+                }
+                
                 // Efecto sutil en la card
                 if (event.currentTarget.classList.contains('card')) {
                     event.currentTarget.style.transform = 'translateY(-4px)';
@@ -1079,36 +1179,7 @@
                     window.location.href = targetUrl;
                 }, 300);
             } else {
-                // Mostrar mensaje amigable
-                const message = document.createElement('div');
-                message.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: var(--white);
-                    border: 1px solid var(--primary);
-                    padding: 16px 20px;
-                    border-radius: var(--radius);
-                    box-shadow: var(--shadow-lg);
-                    z-index: 10000;
-                    animation: slideIn 0.3s ease;
-                    max-width: 300px;
-                `;
-                message.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-                        <i class="fas fa-info-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
-                        <h4 style="margin: 0; color: var(--dark);">Accés necessari</h4>
-                    </div>
-                    <p style="margin: 0; color: var(--gray); font-size: 0.95rem;">
-                        Has d'iniciar sessió per accedir a aquesta secció.
-                    </p>
-                `;
-                document.body.appendChild(message);
-                
-                setTimeout(() => {
-                    message.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => message.remove(), 300);
-                }, 3000);
+                showMessage('info', 'Accés necessari', 'Has d\'iniciar sessió per accedir a aquesta secció.');
                 
                 setTimeout(() => {
                     window.location.href = "login.html?mode=login";
@@ -1118,39 +1189,59 @@
 
         window.handleLogout = () => {
             signOut(auth).then(() => {
-                // Mostrar mensaje de confirmación
-                const message = document.createElement('div');
-                message.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: var(--white);
-                    border: 1px solid var(--secondary);
-                    padding: 16px 20px;
-                    border-radius: var(--radius);
-                    box-shadow: var(--shadow-lg);
-                    z-index: 10000;
-                    animation: slideIn 0.3s ease;
-                    max-width: 300px;
-                `;
-                message.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-                        <i class="fas fa-check-circle" style="color: var(--secondary); font-size: 1.2rem;"></i>
-                        <h4 style="margin: 0; color: var(--dark);">Sessió tancada</h4>
-                    </div>
-                    <p style="margin: 0; color: var(--gray); font-size: 0.95rem;">
-                        Has tancat la sessió correctament.
-                    </p>
-                `;
-                document.body.appendChild(message);
+                showMessage('success', 'Sessió tancada', 'Has tancat la sessió correctament.');
                 
                 setTimeout(() => {
-                    message.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => message.remove(), 300);
                     location.reload();
                 }, 1500);
             });
         };
+
+        // Función para mostrar mensajes
+        function showMessage(type, title, message) {
+            const messageDiv = document.createElement('div');
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle',
+                warning: 'fa-exclamation-triangle'
+            };
+            const colors = {
+                success: 'var(--secondary)',
+                error: '#ef4444',
+                info: 'var(--primary)',
+                warning: '#f59e0b'
+            };
+            
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--white);
+                border: 1px solid ${colors[type]};
+                padding: 16px 20px;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow-lg);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+            `;
+            messageDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                    <i class="fas ${icons[type]}" style="color: ${colors[type]}; font-size: 1.2rem;"></i>
+                    <h4 style="margin: 0; color: var(--dark);">${title}</h4>
+                </div>
+                <p style="margin: 0; color: var(--gray); font-size: 0.95rem;">
+                    ${message}
+                </p>
+            `;
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => messageDiv.remove(), 300);
+            }, 3000);
+        }
 
         // Añadir estilos de animación para los mensajes
         const style = document.createElement('style');
